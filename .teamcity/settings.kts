@@ -28,22 +28,13 @@ version = "2022.04"
 
 project {
 
-    buildType(BuildPlainDoll)
-
-    params {
-        text("cat2", "Zirael", readOnly = true, allowEmpty = true)
-    }
+    buildType(Build)
 }
 
-object BuildPlainDoll : BuildType({
-    name = "Build PlainDoll"
+object Build : BuildType({
+    name = "Build"
 
     artifactRules = "target/*.jar => target"
-
-    params {
-        text("name", "alexey", allowEmpty = true)
-        param("env.cat", "Wizard")
-    }
 
     vcs {
         root(DslContext.settingsRoot)
@@ -51,20 +42,22 @@ object BuildPlainDoll : BuildType({
 
     steps {
         maven {
+            name = "clean deploy"
 
             conditions {
-                doesNotContain("teamcity.build.branch", "master")
-            }
-            goals = "clean test"
-            runnerArgs = "-Dmaven.test.failure.ignore=true"
-        }
-        maven {
-            name = "Upload"
-
-            conditions {
-                contains("teamcity.build.branch", "master")
+                equals("teamcity.build.branch", "master")
             }
             goals = "clean deploy"
+            runnerArgs = "-Dmaven.test.failure.ignore=true"
+            userSettingsSelection = "settings.xml"
+        }
+        maven {
+            name = "clean test"
+
+            conditions {
+                doesNotEqual("teamcity.build.branch", "master")
+            }
+            goals = "clean test"
             userSettingsSelection = "settings.xml"
         }
     }
@@ -72,9 +65,5 @@ object BuildPlainDoll : BuildType({
     triggers {
         vcs {
         }
-    }
-
-    requirements {
-        exists("python3.executable")
     }
 })

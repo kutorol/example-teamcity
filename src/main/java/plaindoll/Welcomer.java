@@ -10,7 +10,7 @@ public class Welcomer{
 	public String sayNeedGold(){
 		return "Not enough gold";
 	}
-	public String saySome(){
-		return "something in the way";
+	public String sayHunter(){
+		return "In 2007, hunter said, A non-white majority America would simply.";
 	}
 }
